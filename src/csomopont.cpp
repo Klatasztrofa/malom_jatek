@@ -18,7 +18,7 @@ void Csomopont::kirajzol()
 
 void Csomopont::kezel(genv::event ev)
 {
-    if (ev.button == btn_left)
+    if (folotte(ev.pos_x, ev.pos_y) && ev.button == btn_left)
     {
         visszajelzes(kx, ky, this);
     }

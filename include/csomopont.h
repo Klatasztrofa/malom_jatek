@@ -14,10 +14,11 @@ class Csomopont : public Widget
 public:
     Csomopont(int x, int y, int kx, int ky, std::function<void(int, int, Csomopont*)> vissz);
 
-    int get_kx(){return kx; }
-    int get_ky(){return ky; } 
+    int get_kx(){ return kx; }
+    int get_ky(){ return ky; } 
     void szomszed_hozzaad(Csomopont* cs) { szomszedok.insert(cs); cs->szomszedok.insert(this); }
     std::set<Csomopont*> get_szomszedok() { return szomszedok; }
+    bool szomszedja_e(Csomopont *cs) { return szomszedok.find(cs) != szomszedok.end(); }
 
     void kirajzol();
     void kezel(genv::event ev);

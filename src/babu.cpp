@@ -3,8 +3,8 @@
 using namespace genv;
 using namespace std;
 
-Babu::Babu(int x, int y, bool egyikJatekose, function<void(int, int)> visszajelzes)
-        :Widget(x,y,20,20), egyikJatekose(egyikJatekose), jatekban(false), visszajelzes(visszajelzes)
+Babu::Babu(int x, int y, bool egyikJatekose)
+        :Widget(x,y,20,20), egyikJatekose(egyikJatekose), jatekban(false)
 {
 }
 
@@ -33,9 +33,4 @@ void Babu::mozgat(int x_, int y_, int kx_, int ky_)
 
 void Babu::kezel(event ev)
 {
-    if(ev.button == btn_left)
-    {
-        visszajelzes(kx,ky);
-        //printf("valami\n");
-    }
 }

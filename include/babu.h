@@ -2,17 +2,15 @@
 #define BABU_H_DEFINE
 
 #include "widget.h"
-#include <functional>
 
 class Babu : public Widget
 {   
     bool egyikJatekose;
     bool jatekban;
-    std::function<void(int, int)> visszajelzes;
     int kx, ky;
 
 public:   
-    Babu(int x, int y, bool egyikJatekose, std::function<void(int, int)> visszajelzes);
+    Babu(int x, int y, bool egyikJatekose);
 
     void jatekba_helyez() { jatekban = true; }
     void kiut() { jatekban = false; }

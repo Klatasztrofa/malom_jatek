@@ -9,11 +9,11 @@ Malom::Malom() : egyikJatekos(true)
     hatterrajzol(500);
     for (int i = 0; i < 9; i++)
     {
-        Babu *b = new Babu(470,30+i*25,true);
+        Babu *b = new Babu(470,30+i*25,true, [=](int x, int y) { babu_visszajelzes(x,y); });
         babuk.push_back(b);
         feltolt(b);
 
-        b = new Babu(10,30+i*25,false);
+        b = new Babu(10,30+i*25,false, [=](int x, int y) { babu_visszajelzes(x,y); });
         babuk.push_back(b);
         feltolt(b);
     }
@@ -27,13 +27,83 @@ Malom::Malom() : egyikJatekos(true)
             if (tabla[x][y] == 0)
             {
                 Csomopont *cs = new Csomopont(a*aranyok[x]-18, a*aranyok[y]-18, x, y, 
-                    [=](int x, int y) { csomopont_visszajelzes(x, y); });
+                    [=](int x, int y, Csomopont* c) { csomopont_visszajelzes(x, y, c); });
                     
                 kattinthatok.push_back(cs);
                 widgets.push_back(cs);
             }
         }
     }
+
+    Csomopont *cs;
+    cs = csp_kereses(0, 0);
+    cs->szomszed_hozzaad(csp_kereses(0, 3));
+    cs->szomszed_hozzaad(csp_kereses(3, 0));
+
+    cs = csp_kereses(0, 3);
+    cs->szomszed_hozzaad(csp_kereses(0, 6));
+    cs->szomszed_hozzaad(csp_kereses(1, 3));
+
+    cs = csp_kereses(0, 6);
+    cs->szomszed_hozzaad(csp_kereses(3, 6));
+
+    cs = csp_kereses(1, 1);
+    cs->szomszed_hozzaad(csp_kereses(1, 3));
+    cs->szomszed_hozzaad(csp_kereses(3, 1));
+
+    cs = csp_kereses(1, 3);
+    cs->szomszed_hozzaad(csp_kereses(1, 5));
+    cs->szomszed_hozzaad(csp_kereses(2, 3));
+
+    cs = csp_kereses(1, 5);
+    cs->szomszed_hozzaad(csp_kereses(3, 5));
+
+    cs = csp_kereses(2, 2);
+    cs->szomszed_hozzaad(csp_kereses(2, 3));
+    cs->szomszed_hozzaad(csp_kereses(3, 2));
+
+    cs = csp_kereses(2, 3);
+    cs->szomszed_hozzaad(csp_kereses(2, 4));
+
+    cs = csp_kereses(3, 0);
+    cs->szomszed_hozzaad(csp_kereses(6, 0));
+    cs->szomszed_hozzaad(csp_kereses(3, 1));
+
+    cs = csp_kereses(3, 1);
+    cs->szomszed_hozzaad(csp_kereses(5, 1));
+    cs->szomszed_hozzaad(csp_kereses(3, 2));
+
+    cs = csp_kereses(3, 2);
+    cs->szomszed_hozzaad(csp_kereses(4, 2));
+
+    cs = csp_kereses(3, 4);
+    cs->szomszed_hozzaad(csp_kereses(3, 5));
+    cs->szomszed_hozzaad(csp_kereses(4, 4));
+
+    cs = csp_kereses(3, 5);
+    cs->szomszed_hozzaad(csp_kereses(3, 6));
+    cs->szomszed_hozzaad(csp_kereses(5, 5));
+
+    cs = csp_kereses(3, 6);
+    cs->szomszed_hozzaad(csp_kereses(6, 6));
+
+    cs = csp_kereses(4, 2);
+    cs->szomszed_hozzaad(csp_kereses(4, 3));
+
+    cs = csp_kereses(4, 3);
+    cs->szomszed_hozzaad(csp_kereses(4, 4));
+    cs->szomszed_hozzaad(csp_kereses(5, 3));
+
+    cs = csp_kereses(5, 1);
+    cs->szomszed_hozzaad(csp_kereses(5, 3));
+
+    cs = csp_kereses(5, 3);
+    cs->szomszed_hozzaad(csp_kereses(6, 3));
+    cs->szomszed_hozzaad(csp_kereses(5, 5));
+
+    cs = csp_kereses(6, 3);
+    cs->szomszed_hozzaad(csp_kereses(6, 6));
+    cs->szomszed_hozzaad(csp_kereses(6, 0));
 }
 
 Babu* Malom::jatekon_kivuli_babu()
@@ -62,7 +132,7 @@ int Malom::babuk_jatekban(bool egyik)
     return db;
 }
 
-void Malom::csomopont_visszajelzes(int x, int y)
+void Malom::csomopont_visszajelzes(int x, int y, Csomopont *cs)
 {
     int a = 500;
     vector<float> aranyok = {0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9};
@@ -81,7 +151,7 @@ void Malom::csomopont_visszajelzes(int x, int y)
             {
                 tabla[x][y] = 2;
             }
-            b->mozgat(a*aranyok[x]-10, a*aranyok[y]-10);
+            b->mozgat(a*aranyok[x]-10, a*aranyok[y]-10, x, y);
             b->jatekba_helyez();
             egyikJatekos = !egyikJatekos;
         }
@@ -90,10 +160,63 @@ void Malom::csomopont_visszajelzes(int x, int y)
     {
         allapot = kivalasztas;
     }
+    if(allapot == kivalasztas && tabla[x][y] != 0)    {
+        
+        if((egyikJatekos && tabla[x][y] == 1) || (!egyikJatekos && tabla[x][y] == 2))
+        {
+            // bool lephet = true;
+            // for (Csomopont *c : cs->get_szomszedok())
+            // {
+            //     if(tabla[c->get_kx()][c->get_ky()] != 0)
+            //     {
+            //         lephet = false;
+            //         break;
+            //     }
+            // }
+            
+            // if (lephet)
+            // {
+            //     kivalasztott_babu = babu_kereses(x,y);
+            //     allapot = mozgatas;
+            // }
+            // else
+            // {
+            //     printf("%d, %d nem lephet\n", kivalasztott_babu->get_kx(), kivalasztott_babu->get_ky());
+            // }
+            
+        }
+        
+    }
+}
 
-    // kivalasztas
-    // mozgatas
+Csomopont* Malom::csp_kereses(int x, int y)
+{
+    auto talalat = std::find_if(kattinthatok.begin(), kattinthatok.end(), [=](Csomopont *b)
+    {
+        return b->get_kx() == x && b->get_ky() == y;
+    });
+
+    return *talalat;
+}
+
+bool Malom::tud_e_mozogni(int x, int y)
+{
     
+}
+Babu* Malom::babu_kereses(int x, int y)
+{
+    auto talalat = std::find_if(babuk.begin(), babuk.end(), [=](Babu *b)
+    {
+        return b->get_kx() == x && b->get_ky() == y;
+    });
+
+    return *talalat;
+}
+
+
+void Malom::babu_visszajelzes(int x, int y)
+{
+    printf("%d, %d\n", x, y);
 }
 
 

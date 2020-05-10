@@ -3,14 +3,22 @@
 
 #include "widget.h"
 #include <functional>
+#include <set>
 
 class Csomopont : public Widget
 {   
     int kx,ky;
-    std::function<void(int, int)> visszajelzes;
+    std::set<Csomopont*> szomszedok;
+    std::function<void(int, int, Csomopont*)> visszajelzes;
 
 public:
-    Csomopont(int x, int y, int kx, int ky, std::function<void(int, int)> vissz);
+    Csomopont(int x, int y, int kx, int ky, std::function<void(int, int, Csomopont*)> vissz);
+
+    int get_kx(){return kx; }
+    int get_ky(){return ky; } 
+    void szomszed_hozzaad(Csomopont* cs) { szomszedok.insert(cs); cs->szomszedok.insert(this); }
+    std::set<Csomopont*> get_szomszedok() { return szomszedok; }
+
     void kirajzol();
     void kezel(genv::event ev);
 };
